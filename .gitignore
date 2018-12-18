@@ -1,0 +1,8 @@
+# Ignore my local history extension folder
+.history
+
+# Hide CircleCI for now
+.circleci
+
+# fk u apple
+.DS_Store
