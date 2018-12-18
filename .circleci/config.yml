@@ -1,0 +1,73 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: us.gcr.io/phdigidev/phdtools-golang-1.11:latest
+        auth:
+          username: _json_key
+          password: ${GKEY}
+        environment:
+          # setup cloud settings
+          PROJECT_ID: phdigidev
+          #setup go build args
+          GO_EXEC_NAME: geosearch
+          GO_BUILD_PATH: ./main.go
+          #setup docker build props
+          DOCKER_REPO: us.gcr.io/phdigidev/
+          DOCKER_IMAGE_NAME: geosearch
+
+    working_directory: /go/src/github.com/scottshotgg/storage
+    steps:
+      # auth with gcloud
+      - run:
+          name: GCloud Authentication
+          command: |
+            echo $GKEY > ${HOME}/gcloud-service-key.json
+            export GOOGLE_APPLICATION_CREDENTIALS=${HOME}/gcloud-service-key.json
+            gcloud --quiet components update
+            gcloud auth activate-service-account --key-file ${HOME}/gcloud-service-key.json
+            gcloud config set project $PROJECT_ID
+
+      # pull source code
+      - checkout
+
+      # execute the build
+      - run:
+          name: GO Build
+          command: go build -o $GO_EXEC_NAME $GO_BUILD_PATH
+
+      # setup docker
+      - setup_remote_docker
+
+      # build a new image with the commit sha1 as the tag
+      - run:
+          name: Docker Build and Push
+          command: |
+            docker build -t $DOCKER_REPO$DOCKER_IMAGE_NAME:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM} .
+            docker tag $DOCKER_REPO$DOCKER_IMAGE_NAME:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM} $DOCKER_REPO$DOCKER_IMAGE_NAME:latest
+
+            # push the docker image to the registry
+            gcloud docker -- push $DOCKER_REPO$DOCKER_IMAGE_NAME:${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}
+            gcloud docker -- push $DOCKER_REPO$DOCKER_IMAGE_NAME:latest
+
+      # deployments
+      - deploy:
+          name: REL_LILLABO:DEV01
+          command: |
+            if [ ${CIRCLE_BRANCH} = "REL_LILLABO" ]; then
+              # set the environment variables for this deployment and configure kubernetes
+              export CLOUDSDK_COMPUTE_ZONE=us-central1-a
+              export CLUSTER_NAME=cluster-1
+              gcloud config set compute/zone ${CLOUDSDK_COMPUTE_ZONE}
+              gcloud --quiet container clusters get-credentials $CLUSTER_NAME
+              
+              # patch the rest deployment
+              export REST_KUBE_DEP_NAME=geosearchrest-dev01
+              export REST_KUBE_CONTAINER_NAME=geosearchrest
+              kubectl patch deployment ${REST_KUBE_DEP_NAME} -p '{"spec":{"template":{"spec":{"containers":[{"name":"'"$REST_KUBE_CONTAINER_NAME"'","image":"'"$DOCKER_REPO$DOCKER_IMAGE_NAME"':'"${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}"'"}]}}}}'
+            
+              # patch the rpc deployment
+              export RPC_KUBE_DEP_NAME=geosearchrpc-dev01
+              export RPC_KUBE_CONTAINER_NAME=geosearchrpc
+              kubectl patch deployment ${RPC_KUBE_DEP_NAME} -p '{"spec":{"template":{"spec":{"containers":[{"name":"'"$RPC_KUBE_CONTAINER_NAME"'","image":"'"$DOCKER_REPO$DOCKER_IMAGE_NAME"':'"${CIRCLE_BRANCH}_${CIRCLE_BUILD_NUM}"'"}]}}}}'
+            fi
