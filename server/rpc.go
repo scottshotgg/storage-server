@@ -1,10 +1,13 @@
 package server
 
 import (
+	"context"
 	"net"
 
+	phdstore "github.com/pizzahutdigital/datastore"
 	"github.com/pkg/errors"
 	"github.com/scottshotgg/storage-server/handlers"
+	"github.com/scottshotgg/storage/impl/datastore"
 	pb "github.com/scottshotgg/storage/protobufs"
 	"github.com/spf13/viper"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -36,8 +39,21 @@ func RunRPC() error {
 		}
 	}()
 
+	// Switch on a config file
+	// switch {}
+
+	ds, err := datastore.New(phdstore.DSConfig{
+		Context:            context.Background(),
+		ServiceAccountFile: "/Users/sgg7269/Documents/serviceAccountFiles/ds-serviceaccount.json",
+		ProjectID:          "phdigidev",
+		Namespace:          "storage_test",
+	})
+	if err != nil {
+		return errors.Wrap(err, "handlers.NewGeosearch")
+	}
+
 	// Try to make a new Geosearch before even starting the server
-	s, err := handlers.New()
+	s, err := handlers.New(ds)
 	if err != nil {
 		return errors.Wrap(err, "handlers.NewGeosearch")
 	}

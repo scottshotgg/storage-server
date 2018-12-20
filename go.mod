@@ -3,8 +3,9 @@ module github.com/scottshotgg/storage-server
 require (
 	github.com/grpc-ecosystem/grpc-gateway v1.6.2
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
+	github.com/pizzahutdigital/datastore v0.0.0-20181220195227-a7f1cefd3337
 	github.com/pkg/errors v0.8.0
-	github.com/scottshotgg/storage v0.0.0-20181218232709-f34b31e78cea
+	github.com/scottshotgg/storage v0.0.0-20181220195906-bcde57a26693
 	github.com/spf13/cobra v0.0.3
 	github.com/spf13/viper v1.3.1
 	go.opencensus.io v0.18.0
