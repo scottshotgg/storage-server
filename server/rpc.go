@@ -4,7 +4,7 @@ import (
 	"net"
 
 	"github.com/pkg/errors"
-	"github.com/scottshotgg/storage/handlers"
+	"github.com/scottshotgg/storage-server/handlers"
 	pb "github.com/scottshotgg/storage/protobufs"
 	"github.com/spf13/viper"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -52,6 +52,5 @@ func RunRPC() error {
 	pb.RegisterStorageServer(rpcServer, s)
 
 	// log
-
 	return rpcServer.Serve(lis)
 }

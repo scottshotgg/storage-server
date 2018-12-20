@@ -1,4 +1,3 @@
-ENV=dev \
 go build -o ./dist/storage \
 && \
 ./dist/storage both \

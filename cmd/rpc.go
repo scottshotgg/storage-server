@@ -18,7 +18,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/scottshotgg/storage/server"
+	"github.com/scottshotgg/storage-server/server"
 	"github.com/spf13/cobra"
 )
 

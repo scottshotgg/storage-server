@@ -39,11 +39,8 @@ github.com/mitchellh/mapstructure
 github.com/pelletier/go-toml
 # github.com/pkg/errors v0.8.0
 github.com/pkg/errors
-# github.com/scottshotgg/storage v0.0.0-20181218192952-52f35c091645
-github.com/scottshotgg/storage/cmd
-github.com/scottshotgg/storage/server
+# github.com/scottshotgg/storage v0.0.0-20181218232709-f34b31e78cea
 github.com/scottshotgg/storage/protobufs
-github.com/scottshotgg/storage/handlers
 # github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem

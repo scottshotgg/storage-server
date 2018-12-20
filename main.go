@@ -15,7 +15,7 @@
 package main
 
 import (
-	"github.com/scottshotgg/storage/cmd"
+	"github.com/scottshotgg/storage-server/cmd"
 )
 
 func main() {
