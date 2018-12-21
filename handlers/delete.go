@@ -7,6 +7,11 @@ import (
 )
 
 // Delete ...
-func (s *StorageServer) Delete(ctx context.Context, in *pb.DeleteReq) (*pb.DeleteRes, error) {
-	return nil, nil
+func (s *StorageServer) Delete(ctx context.Context, req *pb.DeleteReq) (*pb.DeleteRes, error) {
+	var err = s.s.Delete(req.GetID())
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.DeleteRes{}, nil
 }

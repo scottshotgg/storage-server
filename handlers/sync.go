@@ -7,6 +7,11 @@ import (
 )
 
 // Sync ...
-func (s *StorageServer) Sync(ctx context.Context, in *pb.SyncReq) (*pb.SyncRes, error) {
-	return nil, nil
+func (s *StorageServer) Sync(ctx context.Context, req *pb.SyncReq) (*pb.SyncRes, error) {
+	var err = s.s.Sync()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.SyncRes{}, nil
 }

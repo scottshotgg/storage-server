@@ -7,6 +7,13 @@ import (
 )
 
 // Audit ...
-func (s *StorageServer) Audit(ctx context.Context, in *pb.AuditReq) (*pb.AuditRes, error) {
-	return nil, nil
+func (s *StorageServer) Audit(ctx context.Context, req *pb.AuditReq) (*pb.AuditRes, error) {
+	var clMap, err = s.s.Audit()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.AuditRes{
+		Changelogs: pbChangelogMapFromMap(clMap),
+	}, nil
 }

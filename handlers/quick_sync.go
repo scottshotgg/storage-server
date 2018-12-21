@@ -7,6 +7,11 @@ import (
 )
 
 // QuickSync ...
-func (s *StorageServer) QuickSync(ctx context.Context, in *pb.QuickSyncReq) (*pb.QuickSyncRes, error) {
-	return nil, nil
+func (s *StorageServer) QuickSync(ctx context.Context, req *pb.QuickSyncReq) (*pb.QuickSyncRes, error) {
+	var err = s.s.QuickSync()
+	if err != nil {
+		return nil, err
+	}
+
+	return &pb.QuickSyncRes{}, nil
 }
